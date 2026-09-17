@@ -1,0 +1,52 @@
+import cv2
+
+import config
+from gesture_detector import GestureDetector
+from ui_renderer import UIRenderer
+
+
+def main():
+    print("\n=======================================================")
+    print("  Camera Meme Application (Clean & Stable Edition)")
+    print("  - ท่า 1: ชู 2 นิ้ว (✌️)      -> มีม Peace Out หายตัว")
+    print("  - ท่า 2: ชี้เข้าหาตัวเอง (🫵)  -> มีม 'Who, me?!'")
+    print("  - ท่า 3: ชี้นิ้วที่หัว (🧠)     -> มีม 'Think About It'")
+    print("  - กด 'q' เพื่อออกจากโปรแกรม")
+    print("=======================================================\n")
+
+    # เริ่มต้นระบบตรวจจับท่าทาง (พร้อมตัวกรองกันสั่น) และระบบเรนเดอร์หน้าจอ
+    detector = GestureDetector()
+    renderer = UIRenderer()
+
+    cap = cv2.VideoCapture(config.CAMERA_INDEX)
+    if not cap.isOpened():
+        print(f"ข้อผิดพลาด: ไม่สามารถเปิดกล้อง (Index {config.CAMERA_INDEX}) ได้")
+        return
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            print("ไม่สามารถอ่านเฟรมจากกล้องได้")
+            break
+
+        # พลิกภาพแนวนอนเหมือนกระจกเงา (Mirror)
+        frame = cv2.flip(frame, 1)
+
+        # 1. ตรวจจับท่าทางมือ (พร้อมระบบ Smoothing & Debounce)
+        active_gesture, hand_landmarks = detector.process_frame(frame)
+
+        # 2. เรนเดอร์หน้าจอ Split Screen ซ้าย-ขวา
+        display_frame = renderer.render(frame, active_gesture, hand_landmarks)
+
+        # 3. แสดงผลภาพ
+        cv2.imshow(config.WINDOW_TITLE, display_frame)
+
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    main()

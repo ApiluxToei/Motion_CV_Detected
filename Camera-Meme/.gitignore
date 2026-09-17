@@ -1,0 +1,48 @@
+# ==========================================
+# Byte-compiled / optimized / DLL files
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================================
+# C extensions & OS generated files
+# ==========================================
+*.so
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ==========================================
+# IDE & Editor specific files
+# ==========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ==========================================
+# MediaPipe Task Model Binaries
+# (สคริปต์ gesture_detector.py จะดาวน์โหลดให้อัตโนมัติ จึงไม่ต้อง Commit ไฟล์ขนาดใหญ่ขึ้น Git)
+# ==========================================
+*.task
+gesture_recognizer.task
+
+# ==========================================
+# Logs and temporary files
+# ==========================================
+*.log
+scratch/
