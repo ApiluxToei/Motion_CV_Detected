@@ -89,6 +89,70 @@ class GestureDetector:
 
         return None
 
+    def _classify_crossed_fingers(self, landmarks):
+        """
+        จำแนกท่านิ้วไขว้ (Crossed Fingers / Gojo's Domain Expansion: Muryōkūsho)
+        - นิ้วนาง และ นิ้วก้อย ต้องพับอยู่
+        - นิ้วชี้ และ นิ้วกลาง ต้องเหยียดออก
+        - นิ้วชี้กับนิ้วกลางมีลักษณะไขว้กัน (Segments Intersect หรือ ปลายนิ้วสลับด้านกัน)
+        """
+        mcp5 = landmarks[5]
+        pip6 = landmarks[6]
+        tip8 = landmarks[8]
+
+        mcp9 = landmarks[9]
+        pip10 = landmarks[10]
+        tip12 = landmarks[12]
+
+        ring_open = self._is_finger_extended(landmarks[16], landmarks[14], landmarks[13])
+        pinky_open = self._is_finger_extended(landmarks[20], landmarks[18], landmarks[17])
+
+        # ถ้านิ้วนางหรือนิ้วก้อยกางอยู่ จะไม่เข้าเงื่อนไขท่านี้
+        if ring_open or pinky_open:
+            return False
+
+        # ตรวจสอบว่านิ้วชี้และนิ้วกลางเหยียดออก (ระยะปลายถึงโคนมากกว่าระยะข้อกลางถึงโคน)
+        d_tip8_mcp5 = (tip8.x - mcp5.x) ** 2 + (tip8.y - mcp5.y) ** 2 + (tip8.z - mcp5.z) ** 2
+        d_pip6_mcp5 = (pip6.x - mcp5.x) ** 2 + (pip6.y - mcp5.y) ** 2 + (pip6.z - mcp5.z) ** 2
+
+        d_tip12_mcp9 = (tip12.x - mcp9.x) ** 2 + (tip12.y - mcp9.y) ** 2 + (tip12.z - mcp9.z) ** 2
+        d_pip10_mcp9 = (pip10.x - mcp9.x) ** 2 + (pip10.y - mcp9.y) ** 2 + (pip10.z - mcp9.z) ** 2
+
+        if d_tip8_mcp5 < d_pip6_mcp5 * 0.9 or d_tip12_mcp9 < d_pip10_mcp9 * 0.9:
+            return False
+
+        # ตรวจสอบการตัดกันของส่วนของเส้นตรงในมุมมอง 2D (Segments Intersect)
+        def ccw(A, B, C):
+            return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
+
+        def intersect(p1, p2, p3, p4):
+            A = (p1.x, p1.y)
+            B = (p2.x, p2.y)
+            C = (p3.x, p3.y)
+            D = (p4.x, p4.y)
+            return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
+
+        segments_crossed = intersect(pip6, tip8, pip10, tip12) or intersect(mcp5, tip8, mcp9, tip12)
+
+        # ตรวจสอบการพลิกด้านของปลายนิ้วเมื่อเทียบกับแนวโคนนิ้ว (Knuckle Axis Projection)
+        u_x = mcp9.x - mcp5.x
+        u_y = mcp9.y - mcp5.y
+        u_z = mcp9.z - mcp5.z
+        u_len_sq = u_x ** 2 + u_y ** 2 + u_z ** 2
+
+        v_x = tip12.x - tip8.x
+        v_y = tip12.y - tip8.y
+        v_z = tip12.z - tip8.z
+
+        dot_product = u_x * v_x + u_y * v_y + u_z * v_z
+        ratio = dot_product / (u_len_sq + 1e-6)
+
+        # ถ้าเส้นนิ้วตัดกัน หรือปลายนิ้วไขว้สลับด้านกัน (ratio < 0.05)
+        if segments_crossed or ratio < 0.05:
+            return True
+
+        return False
+
     def _get_raw_gesture(self, result):
         """สกัดท่าทางดิบ (Raw Gesture) จากเฟรมปัจจุบัน"""
         if not result.gestures or not result.hand_landmarks:
@@ -96,6 +160,11 @@ class GestureDetector:
 
         for i, gestures_list in enumerate(result.gestures):
             landmarks = result.hand_landmarks[i]
+
+            # ตรวจสอบท่านิ้วไขว้ (Domain Expansion: โกโจ) ก่อน
+            # เพื่อป้องกันการเข้าใจผิดเป็นชู 2 นิ้ว (Victory)
+            if self._classify_crossed_fingers(landmarks):
+                return "domain_expansion"
 
             # ตรวจสอบท่าชู 2 นิ้ว (Victory)
             for gesture in gestures_list:

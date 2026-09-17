@@ -8,9 +8,10 @@ from ui_renderer import UIRenderer
 def main():
     print("\n=======================================================")
     print("  Camera Meme Application (Clean & Stable Edition)")
-    print("  - ท่า 1: ชู 2 นิ้ว (✌️)      -> มีม Peace Out หายตัว")
-    print("  - ท่า 2: ชี้เข้าหาตัวเอง (🫵)  -> มีม 'Who, me?!'")
-    print("  - ท่า 3: ชี้นิ้วที่หัว (🧠)     -> มีม 'Think About It'")
+    print("  - ท่า 1: ชู 2 นิ้ว (✌️)        -> มีม Peace Out หายตัว")
+    print("  - ท่า 2: ชี้เข้าหาตัวเอง (🫵)    -> มีม 'Who, me?!'")
+    print("  - ท่า 3: ชี้นิ้วที่หัว (🧠)       -> มีม 'Think About It'")
+    print("  - ท่า 4: นิ้วไขว้ (🤞)         -> มีม Domain Expansion (Gojo)")
     print("  - กด 'q' เพื่อออกจากโปรแกรม")
     print("=======================================================\n")
 

@@ -19,6 +19,7 @@ class UIRenderer:
         "peace": (0, 255, 128),  # เขียวนีออน
         "self": (50, 200, 255),  # ฟ้านีออน
         "head": (0, 215, 255),   # เหลืองทอง
+        "domain_expansion": (230, 50, 200),  # ม่วงนีออน (Gojo Infinite Void)
         None: (0, 200, 255),     # ฟ้าอมเขียว (ค่าปกติ)
     }
 
@@ -26,6 +27,7 @@ class UIRenderer:
         "peace": "CAMERA | [PEACE OUT] 2 FINGERS",
         "self": "CAMERA | [WHO, ME?!] POINT AT SELF",
         "head": "CAMERA | [THINK ABOUT IT] POINT TO HEAD",
+        "domain_expansion": "CAMERA | [DOMAIN EXPANSION] CROSSED FINGERS",
         None: "CAMERA | READY",
     }
 

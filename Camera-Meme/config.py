@@ -6,7 +6,10 @@
 # -------------------------------------------------------------
 # 1. พาธโมเดล MediaPipe Task
 # -------------------------------------------------------------
-MODEL_PATH = "gesture_recognizer.task"
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "gesture_recognizer.task")
 MODEL_URL = (
     "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/"
     "gesture_recognizer/float16/1/gesture_recognizer.task"
@@ -16,9 +19,10 @@ MODEL_URL = (
 # 2. พาธรูปภาพมีมสำหรับแต่ละท่าทาง
 # -------------------------------------------------------------
 MEME_PATHS = {
-    "peace": "meme_peace_out.jpg",  # ชู 2 นิ้ว (Peace Out)
-    "self": "meme_who_me.jpg",      # ชี้เข้าตัว ("Who, me?!")
-    "head": "meme_think.jpg",       # ชี้ที่หัว ("Think About It")
+    "peace": os.path.join(BASE_DIR, "meme_peace_out.jpg"),  # ชู 2 นิ้ว (Peace Out)
+    "self": os.path.join(BASE_DIR, "meme_who_me.jpg"),      # ชี้เข้าตัว ("Who, me?!")
+    "head": os.path.join(BASE_DIR, "meme_think.jpg"),       # ชี้ที่หัว ("Think About It")
+    "domain_expansion": os.path.join(BASE_DIR, "meme_domain_expansion.jpg"),  # ทำนิ้วไขว้ (Domain Expansion)
 }
 
 # -------------------------------------------------------------

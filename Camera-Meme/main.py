@@ -8,9 +8,10 @@ from ui_renderer import UIRenderer
 def main():
     print("\n=======================================================")
     print("  Camera Meme Application (Clean & Stable Edition)")
-    print("  - ท่า 1: ชู 2 นิ้ว (✌️)      -> มีม Peace Out หายตัว")
-    print("  - ท่า 2: ชี้เข้าหาตัวเอง (🫵)  -> มีม 'Who, me?!'")
-    print("  - ท่า 3: ชี้นิ้วที่หัว (🧠)     -> มีม 'Think About It'")
+    print("  - ท่า 1: ชู 2 นิ้ว (✌️)        -> มีม Peace Out หายตัว")
+    print("  - ท่า 2: ชี้เข้าหาตัวเอง (🫵)    -> มีม 'Who, me?!'")
+    print("  - ท่า 3: ชี้นิ้วที่หัว (🧠)       -> มีม 'Think About It'")
+    print("  - ท่า 4: นิ้วไขว้ (🤞)         -> มีม Domain Expansion (Gojo)")
     print("  - กด 'q' เพื่อออกจากโปรแกรม")
     print("=======================================================\n")
 
@@ -18,16 +19,22 @@ def main():
     detector = GestureDetector()
     renderer = UIRenderer()
 
-    cap = cv2.VideoCapture(config.CAMERA_INDEX)
+    cap = cv2.VideoCapture(config.CAMERA_INDEX, cv2.CAP_DSHOW)
     if not cap.isOpened():
         print(f"ข้อผิดพลาด: ไม่สามารถเปิดกล้อง (Index {config.CAMERA_INDEX}) ได้")
         return
 
+    failed_reads = 0
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
-            print("ไม่สามารถอ่านเฟรมจากกล้องได้")
-            break
+            failed_reads += 1
+            if failed_reads >= 10:
+                print("ไม่สามารถอ่านเฟรมจากกล้องได้ต่อเนื่อง 10 ครั้ง")
+                break
+            continue
+
+        failed_reads = 0
 
         # พลิกภาพแนวนอนเหมือนกระจกเงา (Mirror)
         frame = cv2.flip(frame, 1)
